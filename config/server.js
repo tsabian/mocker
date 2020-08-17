@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import consign from 'consign';
 import compression from 'compression';
 import path from 'path';
+import cors from 'cors';
 
 export default class Server {
 
@@ -22,7 +23,10 @@ export default class Server {
         app.use(compression());
         app.use(bodyParser.urlencoded({extended: true}));
         app.use(bodyParser.json());
-        
+        const corsOptions = { 
+        }
+        app.use(cors());
+
         consign()
             .include('app/routes')
             .then('app/controllers')
