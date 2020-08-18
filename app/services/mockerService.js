@@ -22,9 +22,9 @@ export default class MockerService {
     }
 
     /**
-     * Initialize all collections of data base
+     * Create routes from route data sample json file
      */
-    initializeRoutes() {
+    createRoutes() {
         const sampleFilename = 'routeDataSample.json';
         const filePath = path.join('./', sampleFilename);
         fs.exists(filePath, async (exists) => {
@@ -55,7 +55,10 @@ export default class MockerService {
         
     }
 
-    createCollections() {
+    /**
+     * Initialize all collections of data base
+     */
+    initializeCollections() {
         const conn = this.mongo.prepare();
         conn.connect()
         .then(async (client) => { 
@@ -68,10 +71,10 @@ export default class MockerService {
                         if (err) {
                             console.log(err);
                         } else {
-                            db.createIndex(this.routeIndexName, 'route', { 
+                            db.createIndex(this.routeIndexName, { route: 1, method: 1 }, { 
                                 unique: true 
                             });
-                            this.initializeRoutes();
+                            this.createRoutes();
                         }
                         client.close();
                     });
