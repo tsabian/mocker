@@ -67,4 +67,36 @@ export default class MongoConnection {
             .finally(() => conn.close())
         });
     }
+
+    /**
+     * Insert many itens on collection and return inserted ids [keys: numbers]
+     * @param {string} database set data base name
+     * @param {string} collection set collection name
+     * @param {object} data document data
+     */
+    insertMany(database, collection, data) {
+        return new Promise((resolve, reject) => {
+            const conn = this.prepare();
+            conn.connect()
+            .then(async (client) => {
+                try {
+                    const db = client.db(database);
+                    db.collection(collection)
+                        .insertMany(data, (err, result) => {
+                            if (err) {
+                                reject(err);
+                            }
+                            else {
+                                resolve(result.insertedIds);
+                            }
+                            client.close();
+                        });
+                } catch (err) {
+                    reject(err);
+                }
+            })
+            .catch(err => reject(err))
+            .finally(() => conn.close());
+        });
+    }
 }
