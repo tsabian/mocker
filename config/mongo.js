@@ -30,7 +30,7 @@ export default class MongoConnection {
         })
         .finally(() => { 
             console.log('Connection close');
-            conn.close() 
+            conn.close();
         });
     }
 

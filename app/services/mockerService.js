@@ -22,9 +22,10 @@ export default class MockerService {
     }
 
     /**
-     * Create routes from route data sample json file
+     * Initialize all collections of data base
      */
-    createRoutes() {
+    initializeCollections() {
+        const successfullyMessage = 'Collections has initialized successfully';
         const sampleFilename = 'routeDataSample.json';
         const filePath = path.join('./', sampleFilename);
         fs.exists(filePath, async (exists) => {
@@ -36,52 +37,30 @@ export default class MockerService {
                 if (err) {
                     console.log(err.message);
                 } else {
-                    const collection = JSON.parse(data);
-                    this.mongo.insertMany(this.dbName,
-                                          this.routesCollectionName, collection)
-                    .then((results) => { 
-                        if (!results) {
-                            console.log('Error on insert collection items');
+                    const sampleCollection = JSON.parse(data);
+                    this.mongo.select(this.dbName, this.routesCollectionName)
+                    .then((current) => {
+                        if (current.length == 0) {
+                            console.log('Initialize collections');
+                            this.mongo.insertMany(this.dbName, this.routesCollectionName, sampleCollection)
+                            .then((results) => { 
+                                if (!results) {
+                                    console.log('Error on insert collection items');
+                                } else {
+                                    console.log(results);
+                                    console.log(successfullyMessage);
+                                }
+                            })
+                            .catch(err => { 
+                                console.log(err);
+                            });
                         } else {
-                            console.log(results);
+                            console.log(successfullyMessage);
                         }
                     })
-                    .catch(err => { 
-                        console.log(err);
-                    });
+                    .catch(err => console.log(err));
                 }
             });
-        });
-        
-    }
-
-    /**
-     * Initialize all collections of data base
-     */
-    initializeCollections() {
-        const conn = this.mongo.prepare();
-        conn.connect()
-        .then(async (client) => { 
-            const db = client.db(this.dbName);
-            const collection = db.collection(this.routesCollectionName, (err, result) => {
-                if (err) {
-                    console.log(err.message);
-                } else {
-                    db.createCollection(this.routesCollectionName, (err, result) => { 
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            db.createIndex(this.routeIndexName, { route: 1, method: 1 }, { 
-                                unique: true 
-                            });
-                            this.createRoutes();
-                        }
-                        client.close();
-                    });
-                }
-            });
-        })
-        .catch(err => console.log(err))
-        .finally(() => conn.close());
+        });   
     }
 }
