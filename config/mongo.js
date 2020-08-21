@@ -1,15 +1,36 @@
 import { MongoClient } from 'mongodb';
-import { resolveInclude } from 'ejs';
-
-const mongoUri = 'mongodb://root:pass_123@0.0.0.0:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false';
 
 export default class MongoConnection {
+
+    /**
+     * Initialize new instance of MongoConnection
+     * @param {string} connectionString set connection string to mongodb
+     */
+    constructor(connectionString = null) {
+        // TODO: Include connection string in env file
+        const defaultConnection = 'mongodb://root:pass_123@0.0.0.0:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false';
+        this.mongoUri = connectionString || defaultConnection;
+    }
+
+    /**
+     * Get Database name
+     */
+    get DataBaseName() {
+        return 'Mocker';
+    }
+
+    /**
+     * Get Route Collection name
+     */
+    get RouteCollectionName() {
+        return 'Routes';
+    }
     
     /**
      * prepare mongodb connection
      */
     prepare() {
-        return new MongoClient(mongoUri,
+        return new MongoClient(this.mongoUri,
             {
                 useNewUrlParser: true,
                 useUnifiedTopology: true
@@ -23,7 +44,7 @@ export default class MongoConnection {
         const conn = this.prepare();
         conn.connect()
         .then(async (client) => {
-            console.log('connected')
+            console.log('Mongo connected');
         })
         .catch(err => {
             console.log(`Connection error: ${err}`);

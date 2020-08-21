@@ -7,12 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "babel-node": "babel-node --presets=/*a*/",
     "start": "nodemon --exec babel-node start.js",
-    "start-docker": "nodemon --exec babel-node start.js --host 0.0.0.0",
+    "docker-start": "nodemon --exec babel-node start.js --host 0.0.0.0",
     "docker-mongo-pull": "docker pull mongo",
     "docker-mongo-run": "docker run --name mongo -p 27017:27017 -e 'MONGO_INITDB_ROOT_USERNAME=root' -e 'MONGO_INITDB_ROOT_PASSWORD=pass_123' -d mongo ",
     "docker-build": "docker build -t tsabian/mocker .",
     "docker-run": "docker run --name mocker -p 3000:3000 -d tsabian/mocker",
-    "docker-publish": "docker push tsabian/mocker"
+    "docker-publish": "docker push tsabian/mocker",
+    "docker-init": "npm run docker-mongo-pull & npm run docker-mongo-run & npm run docker-build & npm run docker-run"
   },
   "repository": {
     "type": "git",

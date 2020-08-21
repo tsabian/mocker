@@ -24,7 +24,7 @@ export default class Server {
         app.use(bodyParser.urlencoded({extended: true}));
         app.use(bodyParser.json());
         const corsOptions = { 
-        }
+        };
         app.use(cors());
 
         consign()

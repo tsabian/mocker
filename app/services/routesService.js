@@ -1,16 +1,30 @@
 import MongoConnection from '../../config/mongo';
 
+/**
+ * Methods Class
+ */
 export class Methods { }
+/**
+ * Get verb
+ */
 Methods.get = 'get';
+/**
+ * Post verb
+ */
 Methods.post = 'post';
+/**
+ * Put verb
+ */
 Methods.put = 'put';
+/**
+ * Delete verb
+ */
 Methods.delete = 'delete';
 
+/**
+ * RouteService class
+ */
 export default class RouteService {
-    
-    get dbName() {
-        return 'mocker';
-    }
 
     /**
      * Inicialize new instance of RouteService
@@ -18,14 +32,14 @@ export default class RouteService {
      */
     constructor(mongo = new MongoConnection()) {
         this.mongo = mongo;
-        this.collectionName = 'routes';
     }
 
     getAllRoutes() {
-        return this.mongo.select(this.dbName, this.collectionName)
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName);
     }
 
     /**
+     * Get Routes by methods
      * @param {Methods} withMethod Set method filter
      */
     getRoutes(withMethod = Methods) {
@@ -38,25 +52,33 @@ export default class RouteService {
             'method': {
                 '$eq': `${withMethod}`
             }
-        }
-        return this.mongo.select(this.dbName, this.collectionName, find, projection);
+        };
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection);
+    }
+
+    /**
+     * Get Routes by route and method
+     * @param {string} route 
+     * @param {string} method 
+     */
+    getResponse(route, method) {
+        const find = {
+            'route': `${route}`,
+            'method': `${method}`
+        };
+        const projection = {
+            '_id': 0
+        };
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection);
     }
 
     /**
      * 
-     * @param {string} route 
-     * @param {string} method 
+     * @param {string} collectionName Set collection name
+     * @param {string} find Set filter
      */
-    setResponse(route, method) {
-        const find = {
-            'route': `${route}`,
-            'method': `${method}`
-        }
-        const projection = {
-            '_id': 0
-        }
-        return this.mongo
-        .select(this.mongo.dbName, this.collectionName, find, projection);
+    getCollection(collectionName, find, projection) {
+        return this.mongo.select(this.mongo.DataBaseName, collectionName, find, projection);
     }
 
 }
