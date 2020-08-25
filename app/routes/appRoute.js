@@ -1,6 +1,8 @@
 import RouteService, { Methods } from '../services/routesService';
 import url from 'url';
-import { Request } from 'express';
+import { Request, Response } from 'express';
+import { ServerResponse } from 'http';
+import { stat } from 'fs';
 
 /**
  * 
@@ -8,7 +10,6 @@ import { Request } from 'express';
  * @param {RouteService} routeService set route service injection
  */
 module.exports = async function(application, routeService = new RouteService()) {
-    
     routeService.getRoutes(Methods.get)
     .then(routes => prepareGet(application, routeService, routes))
     .catch(err => console.log(err));
@@ -105,7 +106,7 @@ function prepareRequest(item, service, req, res) {
     .then((route) => {
         
         if (!route || route.length == 0) {
-            return res.status(statusNotFound).json(statusNotFoundBody);
+            return prepareResponse(res, statusNotFound, statusNotFoundBody);
         }
 
         try {
@@ -135,27 +136,45 @@ function prepareRequest(item, service, req, res) {
                 service.getCollection(expectedResponse.responseCollectionName, find, expectedResponse.projection)
                 .then((collectionResult) => {
                     if (collectionResult) { 
-                        return res.status(expectedStatus).json(collectionResult);
+                        return prepareResponse(res, expectedStatus, collectionResult);
                     } else {
-                        return res.status(expectedStatus).json(expectedResponse.body);
+                        if (expectedResponse.body) {
+                            return prepareResponse(res, expectedStatus, expectedResponse.body);
+                        }
+                        return prepareResponse(res, expectedStatus);
                     }
                 })
                 .catch((err) => { 
                     console.log('Request fail');
                     console.log(err);
+                    return prepareResponse(res, statusException);
                 });
 
             } else {
-                return res.status(expectedStatus).json(expectedResponse.body);
+                return prepareResponse(res, expectedStatus, expectedResponse.body);
             }
         } catch (err) {
-            return res.status(statusException).json(err);
+            return prepareResponse(res, statusException, err);
         }
     })
     .catch(err => {
-        return res.status(statusException).json(err);
+        return prepareResponse(res, statusException, err);
     })
     .finally(() => {
         responseLog(req, res);    
     });
+}
+
+/**
+ * Extension for prepare response result
+ * @param {Response}    res     Set response object
+ * @param {Number}      status  Set http status code
+ * @param {Object}      body    Set body result
+ * @returns return the Promise<any>
+ */
+function prepareResponse(res, status, body = null) {
+    if (!body) {
+        return res.status(status).json();
+    }
+    return res.status(status).json(body);
 }

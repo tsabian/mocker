@@ -8,7 +8,7 @@ export default class MongoConnection {
      */
     constructor(connectionString = null) {
         // TODO: Include connection string in env file
-        const defaultConnection = 'mongodb://root:pass_123@0.0.0.0:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false';
+        const defaultConnection = 'mongodb://root:pass_123@192.168.0.4:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false';
         this.mongoUri = connectionString || defaultConnection;
     }
 
