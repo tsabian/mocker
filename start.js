@@ -7,15 +7,22 @@ const service = new MockerService();
 const server = new Server();
 const app = server.prepareApp();
 
+let serverUp = false;
+
 service.initializeCollections()
 .then((result) => {
     if (result && result.success) {
-        app.listen(port, () => {
-            console.log(`Server up listening on port ${port}`);
-        });
         console.log(result);
+        serverUp = true;
     } else {
         console.log('Server down');
     }
 })
-.catch(err => console.log(err));
+.catch(err => console.log(err))
+.finally(() => {
+    if (serverUp) {
+        app.listen(port, () => {
+            console.log(`Server up listening on port ${port}`);
+        });
+    }
+});
