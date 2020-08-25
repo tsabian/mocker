@@ -33,7 +33,8 @@ module.exports = async function(application, routeService = new RouteService()) 
  * @param {any[]} routes set routes
  */
 function prepareGet(application, service, routes) {
-    routes.forEach(item => { 
+    routes.forEach(item => {
+        writeRoute(item);
         application.get(item.route, (req, res) => prepareRequest(item, service, req, res));
     });   
 }
@@ -46,6 +47,7 @@ function prepareGet(application, service, routes) {
  */
 function preparePost(application, service, routes) {
     routes.forEach(item => { 
+        writeRoute(item);
         application.post(item.route, (req, res) => prepareRequest(item, service, req, res));
     });
 }
@@ -58,6 +60,7 @@ function preparePost(application, service, routes) {
  */
 function preparePut(application, service, routes) {
     routes.forEach(item => { 
+        writeRoute(item);
         application.put(item.route, (req, res) => prepareRequest(item, service, req, res));
     });
 }
@@ -70,8 +73,13 @@ function preparePut(application, service, routes) {
  */
 function prepareDelete(application, service, routes) {
     routes.forEach(item => { 
+        writeRoute(item);
         application.delete(item.route, (req, res) => prepareRequest(item, service, req, res));
     });
+}
+
+function writeRoute(item) {
+    console.log(`${item.method} ${item.route}`);
 }
 
 /**
@@ -95,15 +103,20 @@ function prepareRequest(item, service, req, res) {
 
     service.getResponse(currentPath, method)
     .then((route) => {
+        
         if (!route || route.length == 0) {
             return res.status(statusNotFound).json(statusNotFoundBody);
         }
+
         try {
+            
             const firstRoute = route[0];
             const expectedStatus = firstRoute.expectedStatus;
             const expectedResponse = firstRoute.request.responses.find(expected => expected.status == expectedStatus);
+            
             if (expectedResponse.responseCollectionName) {
                 let find = {};
+                
                 if (!expectedResponse.find) {
                     if (contentType == 'application/json' || contentType == 'text/json') {
                         find = req.body || {};
@@ -111,27 +124,29 @@ function prepareRequest(item, service, req, res) {
                         const query = url.parse(req.url, true);
                         if (query) {
                             const findQuery = JSON.parse(JSON.stringify(query.query));
-                            find = findQuery;
+                            find = findQuery || { };
                         }
                     }
+                    
                 } else {
                     find = expectedResponse.find;
                 }
-                console.log(find);
+
                 service.getCollection(expectedResponse.responseCollectionName, find, expectedResponse.projection)
                 .then((collectionResult) => {
                     if (collectionResult) { 
                         return res.status(expectedStatus).json(collectionResult);
                     } else {
-                        return res.statusText(expectedStatus).json(expectedResponse.body);
+                        return res.status(expectedStatus).json(expectedResponse.body);
                     }
                 })
                 .catch((err) => { 
                     console.log('Request fail');
                     console.log(err);
                 });
+
             } else {
-                return res.status(expectedStatus);
+                return res.status(expectedStatus).json(expectedResponse.body);
             }
         } catch (err) {
             return res.status(statusException).json(err);
