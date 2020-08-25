@@ -1,8 +1,6 @@
 import RouteService, { Methods } from '../services/routesService';
 import url from 'url';
 import { Request, Response } from 'express';
-import { ServerResponse } from 'http';
-import { stat } from 'fs';
 
 /**
  * 
