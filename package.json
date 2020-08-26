@@ -4,7 +4,6 @@
   "description": "Servidor de mock com NodeJS e MongoDB",
   "main": "start.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "babel-node": "babel-node --presets=/*a*/",
     "start": "nodemon --exec babel-node start.js",
     "docker-start": "nodemon --exec babel-node start.js --host 0.0.0.0",
