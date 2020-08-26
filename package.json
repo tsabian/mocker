@@ -1,6 +1,6 @@
 {
   "name": "mocker",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Servidor de mock com NodeJS e MongoDB",
   "main": "start.js",
   "scripts": {
@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.1",
+    "@babel/core": "^7.11.4",
     "@babel/node": "^7.10.5",
     "@babel/preset-env": "^7.11.0",
     "body-parser": "^1.19.0",
