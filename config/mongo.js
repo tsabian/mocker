@@ -87,7 +87,7 @@ export default class MongoConnection {
                     }
                 })
                 .catch(err => reject(err))
-                .finally(() => conn.close())
+                .finally(() => conn.close());
         });
     }
 
