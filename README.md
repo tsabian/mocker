@@ -1,11 +1,25 @@
 <p aling="center">
-  
-  ![miniapp-poc-mocker](https://github.com/miniapps-pocs/mocker/workflows/Build%20and%20deploy%20Node.js%20app%20to%20Azure%20Web%20App%20-%20miniapp-poc-mocker/badge.svg?branch=master)
-  
-  
-  <img src="https://img.shields.io/badge/mocker-0.0.1-blue" />
+
+![Version](https://img.shields.io/badge/mocker-0.0.1-blue)
+
 </p>
 
 # mocker
 
 NodeJS server Mock com mongoDB para simular backend para desenvolvimento de frontend.
+
+
+# On-line
+![azure mocker](https://img.shields.io/website?url=https%3A%2F%2Fminiapp-mocker.azurewebsites.net%2F)
+
+https://miniapp-mocker.azurewebsites.net/
+
+# Docker
+
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/miniapppoc/mocker) ![Docker Build Status](https://img.shields.io/docker/build/miniapppoc/mocker)
+
+https://hub.docker.com/repository/docker/miniapppoc/mocker/general
+
+```shell
+docker pull miniapppoc/mocker:latest
+```
