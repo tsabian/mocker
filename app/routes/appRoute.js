@@ -77,6 +77,10 @@ function prepareDelete(application, service, routes) {
     });
 }
 
+/**
+ * Write in console a item route
+ * @param {Object} item Set the route object
+ */
 function writeRoute(item) {
     console.log(`${item.method} ${item.route}`);
 }
@@ -90,70 +94,34 @@ function writeRoute(item) {
  */
 function prepareRequest(item, service, req, res) {
     
-    const statusException = 500;
-    const statusNotFound = 404;
-    const statusNotFoundBody = {
-        message: `Route not found on collection`
-    };
-    const currentPath = item.route;
-    const method = req.method.toLowerCase();
     const headerTypeName = 'contentType';
     const contentType = req.header[headerTypeName];
+    const statusException = 500;
+    const currentPath = item.route;
+    const method = req.method.toLowerCase();
+    
+    const query = url.parse(req.url, true);
+    let findQuery = { };
+    if (query) {
+        findQuery = JSON.parse(JSON.stringify(query.query));
+    }
 
-    service.getResponse(currentPath, method)
-    .then((route) => {
-        
-        if (!route || route.length == 0) {
-            return prepareResponse(res, statusNotFound, statusNotFoundBody);
-        }
+    let filter = {};
+    if (contentType == 'application/json' || contentType == 'text/json') {
+        filter = req.body || {};
+    } else {
+        filter = findQuery || { };
+    }
 
-        try {
-            
-            const firstRoute = route[0];
-            const expectedStatus = firstRoute.expectedStatus;
-            const expectedResponse = firstRoute.request.responses.find(expected => expected.status == expectedStatus);
-            
-            if (expectedResponse.responseCollectionName) {
-                let find = {};
-                
-                if (!expectedResponse.find) {
-                    if (contentType == 'application/json' || contentType == 'text/json') {
-                        find = req.body || {};
-                    } else {
-                        const query = url.parse(req.url, true);
-                        if (query) {
-                            const findQuery = JSON.parse(JSON.stringify(query.query));
-                            find = findQuery || { };
-                        }
-                    }
-                    
-                } else {
-                    find = expectedResponse.find;
-                }
+    service.setHeader(item._id, req.headers);
+    service.setQuery(item._id, findQuery);
+    service.setBody(item._id, req.body);
 
-                service.getCollection(expectedResponse.responseCollectionName, find, expectedResponse.projection)
-                .then((collectionResult) => {
-                    if (collectionResult) { 
-                        return prepareResponse(res, expectedStatus, collectionResult);
-                    } else {
-                        if (expectedResponse.body) {
-                            return prepareResponse(res, expectedStatus, expectedResponse.body);
-                        }
-                        return prepareResponse(res, expectedStatus);
-                    }
-                })
-                .catch((err) => { 
-                    console.log('Request fail');
-                    console.log(err);
-                    return prepareResponse(res, statusException);
-                });
+    service.getResponse(currentPath, method, filter)
+    .then((result) => {
 
-            } else {
-                return prepareResponse(res, expectedStatus, expectedResponse.body);
-            }
-        } catch (err) {
-            return prepareResponse(res, statusException, err);
-        }
+        return prepareResponse(res, result.statusCode, result.body);
+
     })
     .catch(err => {
         return prepareResponse(res, statusException, err);

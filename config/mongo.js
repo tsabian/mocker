@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectID } from 'mongodb';
 
 export default class MongoConnection {
 
@@ -8,7 +8,7 @@ export default class MongoConnection {
      */
     constructor(connectionString = null) {
         // TODO: Include connection string in env file
-        const defaultConnection = 'mongodb://root:pass_123@192.168.0.4:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false';
+        const defaultConnection = 'mongodb://root:pass_123@localhost:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false';
         this.mongoUri = connectionString || defaultConnection;
     }
 
@@ -117,6 +117,43 @@ export default class MongoConnection {
                 }
             })
             .catch(err => reject(err))
+            .finally(() => conn.close());
+        });
+    }
+
+    /**
+     * Update a object
+     * @param {string} database set data base name
+     * @param {string} collection set collection name
+     * @param {string} id Set collection id
+     * @param {Object} updateQuery Set update query json object
+     * @returns Promise
+     */
+    update(database, collection, id, updateQuery) {
+        let _id = ObjectID(id);
+        return new Promise((resolve, reject) => {
+            const conn = this.prepare();
+            conn.connect()
+            .then(async (client) => { 
+                const query = { 
+                    _id
+                };
+                try {
+                    const db = client.db(database);
+                    db.collection(collection)
+                    .updateOne(query, updateQuery, (err, result) => {
+                        if (err) { 
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                        client.close();
+                    });
+                } catch (error) {
+                    reject(error);
+                }
+            })
+            .catch((err) => reject(err))
             .finally(() => conn.close());
         });
     }

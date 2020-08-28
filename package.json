@@ -13,7 +13,7 @@
     "docker-build": "docker build -t tsabian/mocker .",
     "docker-run": "docker run --name mocker -p 3000:3000 -d tsabian/mocker",
     "docker-publish": "docker push tsabian/mocker",
-    "docker-init": "npm run docker-mongo-pull & npm run docker-mongo-run & npm run docker-build & npm run docker-run"
+    "docker-init": "npm run docker-mongo-pull && npm run docker-mongo-run && npm run docker-build && npm run docker-run"
   },
   "repository": {
     "type": "git",
