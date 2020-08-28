@@ -10,7 +10,7 @@ NodeJS server Mock com mongoDB para simular backend para desenvolvimento de fron
 
 
 # On-line
-miniapp-mocker.azurewebsites.net/
+https://miniapp-mocker.azurewebsites.net/
 
 # Docker
 
