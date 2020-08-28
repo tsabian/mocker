@@ -1,7 +1,7 @@
 <p aling="center">
-   
-  <img src="https://img.shields.io/badge/mocker-0.0.1-blue" />
-  
+
+![Version](https://img.shields.io/badge/mocker-0.0.1-blue)
+
 </p>
 
 # mocker
@@ -10,10 +10,21 @@ NodeJS server Mock com mongoDB para simular backend para desenvolvimento de fron
 
 
 # On-line
+
+<img src="https://img.shields.io/website?url=https%3A%2F%2Fminiapp-mocker.azurewebsites.net%2F" alt="" />
+
+
 https://miniapp-mocker.azurewebsites.net/
 
 # Docker
 
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/miniapppoc/mocker)
+
+![Docker Build Status](https://img.shields.io/docker/build/miniapppoc/mocker)
+
+
 https://hub.docker.com/repository/docker/miniapppoc/mocker/general
 
-* docker pull miniapppoc/mocker:latest
+```shell
+docker pull miniapppoc/mocker:latest
+```
