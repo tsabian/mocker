@@ -1,4 +1,5 @@
 import { MongoClient, ObjectID } from 'mongodb';
+import Environment from './environment';
 
 export default class MongoConnection {
 
@@ -6,10 +7,9 @@ export default class MongoConnection {
      * Initialize new instance of MongoConnection
      * @param {string} connectionString set connection string to mongodb
      */
-    constructor(connectionString = null) {
+    constructor(connectionString) {
         // TODO: Include connection string in env file
-        const defaultConnection = 'mongodb://root:pass_123@localhost:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass%20Community&ssl=false';
-        this.mongoUri = connectionString || defaultConnection;
+        this.mongoUri = connectionString
     }
 
     /**
