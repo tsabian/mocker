@@ -1,13 +1,18 @@
 import RouteService, { Methods } from '../services/routesService';
 import url from 'url';
 import { Request, Response } from 'express';
+import Environment from '../../config/environment';
 
 /**
  * 
  * @param {Express} application set express application
+ * @param {Environment} environment
  * @param {RouteService} routeService set route service injection
  */
-module.exports = async function(application, routeService = new RouteService()) {
+module.exports = async function(application, 
+                                environment = new Environment(), 
+                                routeService = new RouteService(environment)) {
+
     routeService.getRoutes(Methods.get)
     .then(routes => prepareGet(application, routeService, routes))
     .catch(err => console.log(err));
