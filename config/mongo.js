@@ -25,16 +25,15 @@ export default class MongoConnection {
     get RouteCollectionName() {
         return 'Routes';
     }
-    
+
     /**
      * prepare mongodb connection
      */
     prepare() {
-        return new MongoClient(this.mongoUri,
-            {
-                useNewUrlParser: true,
-                useUnifiedTopology: true
-            });
+        return new MongoClient(this.mongoUri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
     }
 
     /**
@@ -43,16 +42,16 @@ export default class MongoConnection {
     test() {
         const conn = this.prepare();
         conn.connect()
-        .then(async (client) => {
-            console.log('Mongo connected');
-        })
-        .catch(err => {
-            console.log(`Connection error: ${err}`);
-        })
-        .finally(() => { 
-            console.log('Connection close');
-            conn.close();
-        });
+            .then(async (client) => {
+                console.log('Mongo connected');
+            })
+            .catch(err => {
+                console.log(`Connection error: ${err}`);
+            })
+            .finally(() => {
+                console.log('Connection close');
+                conn.close();
+            });
     }
 
     /**
@@ -70,22 +69,22 @@ export default class MongoConnection {
         return new Promise((resolve, reject) => {
             const conn = this.prepare();
             conn.connect()
-            .then(async (client) => {
-                try {
-                    const db = client.db(database);
-                    const result = await db.collection(collection)
-                    .find(find)
-                    .project(projection)
-                    .toArray();
-                    resolve(result);
-                } catch (err) {
-                    reject(err);
-                } finally {
-                    client.close();
-                }
-            })
-            .catch(err => reject(err))
-            .finally(() => conn.close())
+                .then(async (client) => {
+                    try {
+                        const db = client.db(database);
+                        const result = await db.collection(collection)
+                            .find(find)
+                            .project(projection)
+                            .toArray();
+                        resolve(result);
+                    } catch (err) {
+                        reject(err);
+                    } finally {
+                        client.close();
+                    }
+                })
+                .catch(err => reject(err))
+                .finally(() => conn.close());
         });
     }
 
@@ -99,25 +98,24 @@ export default class MongoConnection {
         return new Promise((resolve, reject) => {
             const conn = this.prepare();
             conn.connect()
-            .then(async (client) => {
-                try {
-                    const db = client.db(database);
-                    db.collection(collection)
-                        .insertMany(data, (err, result) => {
-                            if (err) {
-                                reject(err);
-                            }
-                            else {
-                                resolve(result.insertedIds);
-                            }
-                            client.close();
-                        });
-                } catch (err) {
-                    reject(err);
-                }
-            })
-            .catch(err => reject(err))
-            .finally(() => conn.close());
+                .then(async (client) => {
+                    try {
+                        const db = client.db(database);
+                        db.collection(collection)
+                            .insertMany(data, (err, result) => {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve(result.insertedIds);
+                                }
+                                client.close();
+                            });
+                    } catch (err) {
+                        reject(err);
+                    }
+                })
+                .catch(err => reject(err))
+                .finally(() => conn.close());
         });
     }
 
@@ -134,27 +132,27 @@ export default class MongoConnection {
         return new Promise((resolve, reject) => {
             const conn = this.prepare();
             conn.connect()
-            .then(async (client) => { 
-                const query = { 
-                    _id
-                };
-                try {
-                    const db = client.db(database);
-                    db.collection(collection)
-                    .updateOne(query, updateQuery, (err, result) => {
-                        if (err) { 
-                            reject(err);
-                        } else {
-                            resolve(result);
-                        }
-                        client.close();
-                    });
-                } catch (error) {
-                    reject(error);
-                }
-            })
-            .catch((err) => reject(err))
-            .finally(() => conn.close());
+                .then(async (client) => {
+                    const query = {
+                        _id
+                    };
+                    try {
+                        const db = client.db(database);
+                        db.collection(collection)
+                            .updateOne(query, updateQuery, (err, result) => {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve(result);
+                                }
+                                client.close();
+                            });
+                    } catch (error) {
+                        reject(error);
+                    }
+                })
+                .catch((err) => reject(err))
+                .finally(() => conn.close());
         });
     }
 }
