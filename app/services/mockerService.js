@@ -1,14 +1,16 @@
 import fs from 'fs';
 import path from 'path';
 import MongoConnection from '../../config/mongo';
+import Environment from '../../config/environment';
 
 export default class MockerService {
     
     /**
      * Initialize new instance of MockerService
+     * @param {Environment} environment Set environment variables
      * @param {MongoConnection} mongo MongoConnection instance injection
      */
-    constructor(mongo = new MongoConnection()) {
+    constructor(environment, mongo = new MongoConnection(environment.Settings.mongo.connectionString)) {
         this.mongo = mongo;
     }
 
