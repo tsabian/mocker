@@ -8,8 +8,7 @@ export default class MongoConnection {
      * @param {string} connectionString set connection string to mongodb
      */
     constructor(connectionString) {
-        // TODO: Include connection string in env file
-        this.mongoUri = connectionString
+        this.mongoUri = connectionString;
     }
 
     /**
