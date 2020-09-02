@@ -1,6 +1,6 @@
 {
   "name": "mocker",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Servidor de mock com NodeJS e MongoDB",
   "main": "start.js",
   "scripts": {
@@ -10,10 +10,10 @@
     "docker-start": "nodemon --exec babel-node start.js --host 0.0.0.0",
     "docker-mongo-pull": "docker pull mongo",
     "docker-mongo-run": "docker run --name mongo -p 27017:27017 -e 'MONGO_INITDB_ROOT_USERNAME=root' -e 'MONGO_INITDB_ROOT_PASSWORD=pass_123' -d mongo ",
-    "docker-build": "docker build -t tsabian/mocker .",
-    "docker-run": "docker run --name mocker -p 3000:3000 -d tsabian/mocker",
-    "docker-publish": "docker push tsabian/mocker",
-    "docker-init": "npm run docker-mongo-pull && npm run docker-mongo-run && npm run docker-build && npm run docker-run"
+    "docker-build": "docker build -t miniapppoc/mocker .",
+    "docker-run": "docker run --name mocker -p 3000:3000 -d miniapppoc/mocker",
+    "docker-publish": "docker push miniapppoc/mocker",
+    "docker-init": "npm run docker-mongo-pull && npm run docker-mongo-run && npm run docker-run"
   },
   "repository": {
     "type": "git",
@@ -34,13 +34,13 @@
   },
   "homepage": "https://github.com/bitxlabs/mocker#readme",
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.1",
-    "@babel/node": "^7.10.5",
-    "@babel/preset-env": "^7.11.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.4",
+    "@babel/node": "^7.10.5",
+    "@babel/preset-env": "^7.11.0",
     "body-parser": "^1.19.0",
     "compression": "^1.7.4",
     "consign": "^0.1.6",
