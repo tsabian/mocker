@@ -1,4 +1,5 @@
 import MongoConnection from '../../config/mongo';
+import Environment from '../../config/environment';
 
 /**
  * Methods Class
@@ -28,12 +29,16 @@ export default class RouteService {
 
     /**
      * Inicialize new instance of RouteService
+     * @param {Environment} environment set environment variables
      * @param {MongoConnection} mongo 
      */
-    constructor(mongo = new MongoConnection()) {
+    constructor(environment, mongo = new MongoConnection(environment.Settings.mongo.connectionString)) {
         this.mongo = mongo;
     }
 
+    /**
+     * Get all routes
+     */
     getAllRoutes() {
         return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName);
     }
@@ -42,7 +47,7 @@ export default class RouteService {
      * Get Routes by methods
      * @param {Methods} withMethod Set method filter
      */
-    getRoutes(withMethod = Methods) {
+    getRoutes(withMethod) {
         const projection = {
             'route': 1, 
             'method': 1
@@ -124,7 +129,7 @@ export default class RouteService {
     }
 
     /**
-     * 
+     * Get collection by collectionName
      * @param {string} collectionName Set collection name
      * @param {string} find Set filter
      */
@@ -133,7 +138,7 @@ export default class RouteService {
     }
 
     /**
-     * 
+     * Insert request header values
      * @param {string} id Set collection id
      * @param {Object} keyValues Set header keyvalues
      */
@@ -145,6 +150,11 @@ export default class RouteService {
         .catch((err) => console.log(err));
     }
 
+    /**
+     * Insert request query values
+     * @param {string} id set route id
+     * @param {Object} keyValues set request query values
+     */
     setQuery(id, keyValues) {
         const update = {
             '$set': { 'request.query': keyValues }
@@ -153,6 +163,11 @@ export default class RouteService {
         .catch((err) => console.log(err));
     }
 
+    /**
+     * Insert bodu values
+     * @param {string} id set route id
+     * @param {Object} object set request body values
+     */
     setBody(id, object) {
         const update = {
             '$set': { 'request.body': object }

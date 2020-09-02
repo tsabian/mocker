@@ -4,6 +4,7 @@ import consign from 'consign';
 import compression from 'compression';
 import path from 'path';
 import cors from 'cors';
+import helmet from 'helmet';
 
 export default class Server {
 
@@ -17,13 +18,15 @@ export default class Server {
 
         const publicPath = path.join(__dirname, '..', 'app', 'public');
         app.use(express.static(publicPath));
-
+        
+        app.use(helmet());
         app.use(compression());
         app.use(bodyParser.urlencoded({extended: true}));
         app.use(bodyParser.json());
         const corsOptions = { 
         };
         app.use(cors());
+        app.disable('x-powered-by');
 
         consign()
             .include('app/routes')
