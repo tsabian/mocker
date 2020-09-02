@@ -5,8 +5,8 @@
   "main": "start.js",
   "scripts": {
     "babel-node": "babel-node --presets=/*a*/",
-    "start": "nodemon --exec babel-node start.js -- --configuration=dev",
-    "start-local": "nodemon --exec babel-node start.js",
+    "start": "--exec babel-node start.js",
+    "start-local": "nodemon --exec babel-node start.js -- --configuration=dev",
     "docker-start": "nodemon --exec babel-node start.js --host 0.0.0.0",
     "docker-mongo-pull": "docker pull mongo",
     "docker-mongo-run": "docker run --name mongo -p 27017:27017 -e 'MONGO_INITDB_ROOT_USERNAME=root' -e 'MONGO_INITDB_ROOT_PASSWORD=pass_123' -d mongo ",
