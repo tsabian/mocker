@@ -76,9 +76,9 @@ function prepareRequest(route, service, req, res) {
     }
 
     // TODO: Merge query and params into filter
-    if (!query && req.params) {
-        filter = req.params || { };
-    }
+    // if (!query && req.params) {
+    //     filter = req.params || { };
+    // }
 
     const id = route._id;
 
