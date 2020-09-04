@@ -5,17 +5,18 @@ export default class MongoConnection {
 
     /**
      * Initialize new instance of MongoConnection
-     * @param {string} connectionString set connection string to mongodb
+     * @param {Environment} environment set environment variables
      */
-    constructor(connectionString) {
-        this.mongoUri = connectionString;
+    constructor(environment) {
+        this._dataBaseName = environment.Settings.mongo.DataBaseName;
+        this.mongoUri = environment.Settings.mongo.connectionString;
     }
 
     /**
      * Get Database name
      */
     get DataBaseName() {
-        return 'Mocker';
+        return this._dataBaseName;
     }
 
     /**
@@ -58,13 +59,10 @@ export default class MongoConnection {
      * @param {string} database 
      * @param {string} collection 
      * @param {object} find 
-     * @param {object} projection 
+     * @param {object} projection
+     * @param {Number} limit Set the limit of collection, default is 0
      */
-    select(database, collection, find = {}, projection = {}) {
-        const mongoProperties = {
-            find,
-            projection
-        };
+    select(database, collection, find = {}, projection = {}, limit = 0) {
         return new Promise((resolve, reject) => {
             const conn = this.prepare();
             conn.connect()
@@ -72,7 +70,7 @@ export default class MongoConnection {
                     try {
                         const db = client.db(database);
                         const result = await db.collection(collection)
-                            .find(find)
+                            .find(find, { limit: limit })
                             .project(projection)
                             .toArray();
                         resolve(result);

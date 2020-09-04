@@ -1,93 +1,153 @@
-[
-    {
-        "name": "Root",
-        "route": "/",
-        "method": "get",
-        "expectedStatus": 200,
-        "request": {
-            "headers": [],
-            "query": [],
-            "body": null,
-            "responses": [
-                {
-                    "status": 200,
-                    "body": { "message": "mocker is running :D" },
-                    "responseCollectionName": null,
-                    "find": null,
-                    "projection": null
-                },
-                {
-                    "status": 400,
-                    "body": { "message": "not found 😢" },
-                    "responseCollectionName": null,
-                    "find": null,
-                    "projection": null
-                },
-                {
-                    "status": 500,
-                    "body": { "message": "error 🤦‍♂️" },
-                    "responseCollectionName": null,
-                    "find": null,
-                    "projection": null
-                }
-            ]
+[{
+    "name": "Root",
+    "path": "/",
+    "context": null,
+    "method": "get",
+    "expectedStatus": 200,
+    "request": {
+      "headers": null,
+      "query": null,
+      "body": null,
+      "params": null,
+      "responses": [
+        {
+          "status": 200,
+          "body": {
+            "message": "mocker is running :D"
+          },
+          "responseCollectionName": null,
+          "find": null,
+          "projection": null
+        },
+        {
+          "status": 400,
+          "body": {
+            "message": "not found 😢"
+          },
+          "responseCollectionName": null,
+          "find": null,
+          "projection": null
+        },
+        {
+          "status": 500,
+          "body": {
+            "message": "error 🤦‍♂️"
+          },
+          "responseCollectionName": null,
+          "find": null,
+          "projection": null
         }
-    },
-    {
-        "name": "Names",
-        "route": "/names",
-        "method": "post",
-        "expectedStatus": 200,
-        "request": {
-            "headers": [],
-            "query": [],
-            "body": null,
-            "responses": [
-                {
-                    "status": 200,
-                    "body": ["Tiago", "João", "Maria", "Pedro"]
-                },
-                {
-                    "status": 400,
-                    "body": { "message": "not found" }
-                },
-                {
-                    "status": 500,
-                    "body": null
-                }
-            ]
-        }
-    },
-    {
-        "name": "Values",
-        "route": "/values",
-        "method": "get",
-        "expectedStatus": 200,
-        "request": {
-            "headers": [],
-            "query": [],
-            "body": null,
-            "responses": [
-                {
-                    "status": 200,
-                    "body": { 
-                        "values": [2000, 3000, 4000, 5000, 6000, 7000]
-                    },
-                    "responseCollectionName": "Values",
-                    "find": null,
-                    "projection": {
-                        "_id": 0
-                    }
-                },
-                {
-                    "status": 400,
-                    "body": { "message": "not found" }
-                },
-                {
-                    "status": 500,
-                    "body": null
-                }
-            ]
-        }
+      ]
     }
-]
+  },{
+    "name": "Names",
+    "path": "/names",
+    "context": [
+      "context1",
+      "context2"
+    ],
+    "method": "post",
+    "expectedStatus": 200,
+    "request": {
+      "headers": {},
+      "query": {},
+      "body": {},
+      "params": {},
+      "responses": [
+        {
+          "status": 200,
+          "body": [
+            "Tiago",
+            "João",
+            "Maria",
+            "Pedro"
+          ]
+        },
+        {
+          "status": 400,
+          "body": {
+            "message": "not found"
+          }
+        },
+        {
+          "status": 500,
+          "body": null
+        }
+      ]
+    }
+  },{
+    "name": "Values",
+    "path": "/values",
+    "context": [
+      "context1",
+      "context2"
+    ],
+    "method": "get",
+    "expectedStatus": 200,
+    "request": {
+      "headers": {},
+      "query": {},
+      "body": {},
+      "params": {},
+      "responses": [
+        {
+          "status": 200,
+          "body": null,
+          "responseCollectionName": "Values",
+          "find": null,
+          "projection": {
+            "_id": 0
+          },
+          "limit": 1
+        },
+        {
+          "status": 400,
+          "body": {
+            "message": "not found"
+          }
+        },
+        {
+          "status": 500,
+          "body": null
+        }
+      ]
+    }
+  },{
+    "name": "Values",
+    "path": "/values/:id",
+    "context": [
+      "context1",
+      "context2"
+    ],
+    "method": "get",
+    "expectedStatus": 200,
+    "request": {
+      "headers": {},
+      "query": {},
+      "body": {},
+      "params": {
+        "id": "1234"
+      },
+      "responses": [
+        {
+          "status": 200,
+          "body": null,
+          "responseCollectionName": "Values",
+          "find": null,
+          "projection": {
+            "_id": 0
+          }
+        },
+        {
+          "status": 400,
+          "body": {
+            "message": "not found"
+          }
+        },
+        {
+          "status": 500,
+          "body": null
+        }
+      ]
+    }
+  }]
