@@ -35,7 +35,7 @@ function prepare(application, service, routes) {
  * @param {Object} route Set route object
  */
 function create(application, service, route) {
-    if (route.context && route.context.length > 0) {
+    if (route.context || route.context.length > 0) {
         route.context.forEach(context => {
             const path = `/${context}${route.path}`;
             console.log(`${route.method} ${path}`);
