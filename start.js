@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 const environment = new Environment();
 const server = new Server();
 const service = new MockerService(environment);
-const app = server.prepareApp();
+let app;
 
 let serverUp = false;
 
@@ -16,15 +16,16 @@ service.initializeCollections()
     if (result && result.success) {
         console.log(result);
         serverUp = true;
-    } else {
-        console.log('Server down');
     }
 })
 .catch(err => console.log(err))
 .finally(() => {
     if (serverUp) {
+        app = server.prepareApp();
         app.listen(port, () => {
             console.log(`Server vesion ${process.env.npm_package_version} up listening on port ${port}`);
         });
+    } else {
+        console.log('Server down');
     }
 });

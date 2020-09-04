@@ -32,7 +32,7 @@ export default class RouteService {
      * @param {Environment} environment set environment variables
      * @param {MongoConnection} mongo 
      */
-    constructor(environment, mongo = new MongoConnection(environment.Settings.mongo.connectionString)) {
+    constructor(environment, mongo = new MongoConnection(environment)) {
         this.mongo = mongo;
     }
 
@@ -40,7 +40,13 @@ export default class RouteService {
      * Get all routes
      */
     getAllRoutes() {
-        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName);
+        const projection = {
+            'path': 1, 
+            'method': 1,
+            'context': 1
+        };
+        const find = { }
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection);
     }
 
     /**
@@ -49,8 +55,9 @@ export default class RouteService {
      */
     getRoutes(withMethod) {
         const projection = {
-            'route': 1, 
-            'method': 1
+            'path': 1, 
+            'method': 1,
+            'context': 1
         };
         const find = {
             'method': {
@@ -66,17 +73,21 @@ export default class RouteService {
      * @param {string} method
      * @param {Object} filter
      */
-    getResponse(route, method, filter = {}) {
+    getResponse(path, method, filter = {}) {
         let result = {
             statusCode: 304
         };
         const statusException = 500;
         const statusNotFound = 404;
         const statusNotFoundBody = {
-            message: `Route not found on collection`
+            message: `Route not found on collection`,
+            route: { 
+                path,
+                method
+            }
         };
         const find = {
-            'route': `${route}`,
+            'path': `${path}`,
             'method': `${method}`
         };
         const projection = {
@@ -97,10 +108,14 @@ export default class RouteService {
                         const expectedResponse = firstRoute.request.responses.find(expected => expected.status == result.statusCode);
                         if (expectedResponse.responseCollectionName) {
                             const find = expectedResponse.find || filter;
-                            this.getCollection(expectedResponse.responseCollectionName, find, expectedResponse.projection)
+                            this.getCollection(expectedResponse.responseCollectionName, find, expectedResponse.projection, expectedResponse.limit || 0)
                             .then((collectionResult) => {
                                 if (collectionResult) {
-                                    result.body = collectionResult;
+                                    if (expectedResponse.limit == 0 || expectedResponse.limit > 1) {
+                                        result.body = collectionResult;
+                                    } else {
+                                        result.body = collectionResult[0];
+                                    }
                                 } else {
                                     result.body = expectedResponse.body;
                                 }
@@ -132,9 +147,10 @@ export default class RouteService {
      * Get collection by collectionName
      * @param {string} collectionName Set collection name
      * @param {string} find Set filter
+     * @param {Number} limit Set the limit of collectin, default is 0
      */
-    getCollection(collectionName, find, projection) {
-        return this.mongo.select(this.mongo.DataBaseName, collectionName, find, projection);
+    getCollection(collectionName, find, projection, limit = 0) {
+        return this.mongo.select(this.mongo.DataBaseName, collectionName, find, projection, limit);
     }
 
     /**
@@ -164,13 +180,26 @@ export default class RouteService {
     }
 
     /**
-     * Insert bodu values
+     * Insert body values
      * @param {string} id set route id
      * @param {Object} object set request body values
      */
     setBody(id, object) {
         const update = {
             '$set': { 'request.body': object }
+        };
+        this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
+        .catch((err) => console.log(err));
+    }
+
+    /**
+     * Insert params values
+     * @param {string} id set route id
+     * @param {Object} object set request body values
+     */
+    setParams(id, object) {
+        const update = {
+            '$set': { 'request.params': object }
         };
         this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
         .catch((err) => console.log(err));
