@@ -10,7 +10,7 @@ export default class MockerService {
      * @param {Environment} environment Set environment variables
      * @param {MongoConnection} mongo MongoConnection instance injection
      */
-    constructor(environment, mongo = new MongoConnection(environment.Settings.mongo.connectionString)) {
+    constructor(environment, mongo = new MongoConnection(environment)) {
         this.mongo = mongo;
     }
 
