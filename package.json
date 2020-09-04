@@ -1,6 +1,6 @@
 {
   "name": "mocker",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Servidor de mock com NodeJS e MongoDB",
   "main": "start.js",
   "scripts": {

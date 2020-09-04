@@ -35,15 +35,15 @@ function prepare(application, service, routes) {
  * @param {Object} route Set route object
  */
 function create(application, service, route) {
-    if (route.context || route.context.length > 0) {
+    if (!route.context || route.context.length == 0) {
+        console.log(`${route.method} ${route.path}`);
+        application[route.method](route.path, (req, res) => prepareRequest(route, service, req, res));        
+    } else {
         route.context.forEach(context => {
             const path = `/${context}${route.path}`;
             console.log(`${route.method} ${path}`);
             application[route.method](path, (req, res) => prepareRequest(route, service, req, res));
         });
-    } else {
-        console.log(`${route.method} ${route.path}`);
-        application[route.method](route.path, (req, res) => prepareRequest(route, service, req, res));
     }
 }
 
