@@ -13,81 +13,38 @@ module.exports = async function(application,
                                 environment = new Environment(), 
                                 routeService = new RouteService(environment)) {
 
-    routeService.getRoutes(Methods.get)
-    .then(routes => prepareGet(application, routeService, routes))
-    .catch(err => console.log(err));
-
-    routeService.getRoutes(Methods.post)
-    .then(routes => preparePost(application, routeService, routes))
-    .catch(err => console.log(err));
-
-    routeService.getRoutes(Methods.put)
-    .then(routes => preparePut(application, routeService, routes))
-    .catch(err => console.log(err));
-
-    routeService.getRoutes(Methods.delete)
-    .then(routes => prepareDelete(application, routeService, routes))
+    routeService.getAllRoutes()
+    .then(routes => prepare(application, routeService, routes))
     .catch(err => console.log(err));
 };
 
 /**
- * prepare get routes
- * @param {Express} application set express application
+ * 
+ * @param {Express} application Set the application
  * @param {RouteService} service set route service
  * @param {any[]} routes set routes
  */
-function prepareGet(application, service, routes) {
-    routes.forEach(item => {
-        writeRoute(item);
-        application.get(item.route, (req, res) => prepareRequest(item, service, req, res));
-    });   
+function prepare(application, service, routes) {
+    routes.forEach(route => create(application, service, route));
 }
 
 /**
- * prepare post routes
- * @param {Express} application set express application
+ * 
+ * @param {Express} application Set the application
  * @param {RouteService} service set route service
- * @param {any[]} routes set routes
+ * @param {Object} route Set route object
  */
-function preparePost(application, service, routes) {
-    routes.forEach(item => { 
-        writeRoute(item);
-        application.post(item.route, (req, res) => prepareRequest(item, service, req, res));
-    });
-}
-
-/**
- * prepare put routes
- * @param {Express} application set express application
- * @param {RouteService} service set route service
- * @param {any[]} routes set routes
- */
-function preparePut(application, service, routes) {
-    routes.forEach(item => { 
-        writeRoute(item);
-        application.put(item.route, (req, res) => prepareRequest(item, service, req, res));
-    });
-}
-
-/**
- * prepare delete routes
- * @param {Express} application set express application
- * @param {RouteService} service set route service
- * @param {any[]} routes set routes
- */
-function prepareDelete(application, service, routes) {
-    routes.forEach(item => { 
-        writeRoute(item);
-        application.delete(item.route, (req, res) => prepareRequest(item, service, req, res));
-    });
-}
-
-/**
- * Write in console a item route
- * @param {Object} item Set the route object
- */
-function writeRoute(item) {
-    console.log(`${item.method} ${item.route}`);
+function create(application, service, route) {
+    if (!route.context || route.context.length == 0) {
+        console.log(`${route.method} ${route.path}`);
+        application[route.method](route.path, (req, res) => prepareRequest(route, service, req, res));        
+    } else {
+        route.context.forEach(context => {
+            const path = `/${context}${route.path}`;
+            console.log(`${route.method} ${path}`);
+            application[route.method](path, (req, res) => prepareRequest(route, service, req, res));
+        });
+    }
 }
 
 /**
@@ -97,12 +54,12 @@ function writeRoute(item) {
  * @param {Request} req set request object
  * @param {Response} res set response object
  */
-function prepareRequest(item, service, req, res) {
+function prepareRequest(route, service, req, res) {
     
     const headerTypeName = 'contentType';
     const contentType = req.header[headerTypeName];
     const statusException = 500;
-    const currentPath = item.route;
+    const currentPath = route.path;
     const method = req.method.toLowerCase();
     
     const query = url.parse(req.url, true);
@@ -111,20 +68,27 @@ function prepareRequest(item, service, req, res) {
         findQuery = JSON.parse(JSON.stringify(query.query));
     }
 
-    let filter = {};
+    let filter = { };
     if (contentType == 'application/json' || contentType == 'text/json') {
-        filter = req.body || {};
+        filter = req.body || { };
     } else {
         filter = findQuery || { };
     }
 
-    service.setHeader(item._id, req.headers);
-    service.setQuery(item._id, findQuery);
-    service.setBody(item._id, req.body);
+    // TODO: Merge query and params into filter
+    // if (!query && req.params) {
+    //     filter = req.params || { };
+    // }
+
+    const id = route._id;
+
+    service.setHeader(id, req.headers);
+    service.setQuery(id, findQuery);
+    service.setBody(id, req.body);
+    service.setParams(id, req.params);
 
     service.getResponse(currentPath, method, filter)
     .then((result) => {
-
         return prepareResponse(res, result.statusCode, result.body);
 
     })
