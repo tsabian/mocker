@@ -38,7 +38,8 @@ function create(application, service, route) {
         application[route.method](route.path, (req, res) => prepareRequest(route, service, req, res));
     } else {
         route.context.forEach(context => {
-            const path = `/${context}${route.path}`;
+            const current = context ? `/context` : '';
+            const path = `/${current}${route.path}`;
             console.log(`${route.method} ${path}`);
             application[route.method](path, (req, res) => prepareRequest(route, service, req, res));
         });
