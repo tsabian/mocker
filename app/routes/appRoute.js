@@ -1,18 +1,16 @@
-import RouteService, { Methods } from '../services/routesService';
+import RouteService from '../services/routesService';
 import url from 'url';
-import { Request, Response } from 'express';
 import Environment from '../../config/environment';
 
 /**
- * 
+ * App Route export
  * @param {Express} application set express application
  * @param {Environment} environment
  * @param {RouteService} routeService set route service injection
  */
-module.exports = async function(application, 
-                                environment = new Environment(), 
-                                routeService = new RouteService(environment)) {
-
+module.exports = function AppRoute(application,
+    environment = new Environment(),
+    routeService = new RouteService(environment)) {
     routeService.getAllRoutes()
     .then(routes => prepare(application, routeService, routes))
     .catch(err => console.log(err));
@@ -37,7 +35,7 @@ function prepare(application, service, routes) {
 function create(application, service, route) {
     if (!route.context || route.context.length == 0) {
         console.log(`${route.method} ${route.path}`);
-        application[route.method](route.path, (req, res) => prepareRequest(route, service, req, res));        
+        application[route.method](route.path, (req, res) => prepareRequest(route, service, req, res));
     } else {
         route.context.forEach(context => {
             const path = `/${context}${route.path}`;
@@ -69,17 +67,19 @@ function prepareRequest(route, service, req, res) {
     }
 
     let filter = { };
-    if (contentType == 'application/json' || contentType == 'text/json') {
+    if (contentType === 'application/json' || contentType === 'text/json') {
         filter = req.body || { };
     } else {
         filter = findQuery || { };
     }
 
-    // TODO: Merge query and params into filter
-    // if (!query && req.params) {
-    //     filter = req.params || { };
-    // }
-
+    const params = req.params;
+    if (params) {
+        for (var key in params) {
+            filter[key] = params[key];
+        }
+    }
+    
     const id = route._id;
 
     service.setHeader(id, req.headers);
