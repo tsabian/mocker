@@ -12,10 +12,6 @@ export default class Server {
 
         const app = express();
 
-        app.set('view engine', 'ejs');
-        const viewsPath = path.join(__dirname, '..', 'app', 'views');
-        app.set('views', viewsPath);
-
         const publicPath = path.join(__dirname, '..', 'app', 'public');
         app.use(express.static(publicPath));
         
@@ -25,7 +21,7 @@ export default class Server {
         app.use(bodyParser.json());
         const corsOptions = { 
         };
-        app.use(cors());
+        app.use(cors(corsOptions));
         app.disable('x-powered-by');
 
         consign()
