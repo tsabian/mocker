@@ -1,5 +1,6 @@
 import MongoConnection from '../../config/mongo';
 import Environment from '../../config/environment';
+import { ObjectId } from 'mongodb';
 
 /**
  * Methods Class
@@ -34,6 +35,25 @@ export default class RouteService {
      */
     constructor(environment, mongo = new MongoConnection(environment)) {
         this.mongo = mongo;
+    }
+
+    /**
+     * Get all elements by routes
+     */
+    listRoutes() {
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName);
+    }
+
+    /**
+     * Get Routes by object ID
+     * @param {string} id Set id to filter routes
+     */
+    getBy(id) {
+        const find = {
+            '_id': new ObjectId(id)
+        };
+        console.log(find);
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find);
     }
 
     /**

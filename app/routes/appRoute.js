@@ -11,6 +11,14 @@ import Environment from '../../config/environment';
 module.exports = function AppRoute(application,
     environment = new Environment(),
     routeService = new RouteService(environment)) {
+
+    application.get('/api/route', (req, res) => {
+        application.app.controllers.routeController.route(routeService, req, res);
+    });
+    application.get('/api/route/:id', (req, res) => {
+        application.app.controllers.routeController.routeById(routeService, req, res);
+    });
+
     routeService.getAllRoutes()
     .then(routes => prepare(application, routeService, routes))
     .catch(err => console.log(err));
