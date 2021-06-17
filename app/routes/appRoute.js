@@ -15,6 +15,7 @@ module.exports = function AppRoute(application,
     application.get('/api/route', (req, res) => {
         application.app.controllers.routeController.route(routeService, req, res);
     });
+    
     application.get('/api/route/:id', (req, res) => {
         application.app.controllers.routeController.routeById(routeService, req, res);
     });
