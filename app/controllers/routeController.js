@@ -1,6 +1,4 @@
 import RouteService from '../services/routesService';
-import Request from 'express';
-import Response from 'express';
 
 /**
  * Get all routes
