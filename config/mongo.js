@@ -10,6 +10,7 @@ export default class MongoConnection {
     constructor(environment) {
         this._dataBaseName = environment.Settings.mongo.DataBaseName;
         this.mongoUri = environment.Settings.mongo.connectionString;
+        this._sessionDataBase = this.getConnection();
     }
 
     /**
@@ -27,13 +28,30 @@ export default class MongoConnection {
     }
 
     /**
-     * prepare mongodb connection
+     * Get new Connection
+     * @returns {MongoClient} MongoClient
      */
-    prepare() {
+    getConnection() {
         return new MongoClient(this.mongoUri, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
+    }
+
+    /**
+     * prepare mongodb connection
+     */
+    prepare() {
+        this._sessionDataBase = this._sessionDataBase ?? this.getConnection();
+        if (!this._sessionDataBase.isConnected()) {
+            this._sessionDataBase = this.getConnection();
+        }
+        return this._sessionDataBase;
+    }
+
+    close() {
+        this._sessionDataBase.removeAllListeners();
+        this._sessionDataBase.close();
     }
 
     /**
@@ -76,12 +94,9 @@ export default class MongoConnection {
                         resolve(result);
                     } catch (err) {
                         reject(err);
-                    } finally {
-                        client.close();
                     }
                 })
-                .catch(err => reject(err))
-                .finally(() => conn.close());
+                .catch(err => reject(err));
         });
     }
 
@@ -105,14 +120,12 @@ export default class MongoConnection {
                                 } else {
                                     resolve(result.insertedIds);
                                 }
-                                client.close();
                             });
                     } catch (err) {
                         reject(err);
                     }
                 })
-                .catch(err => reject(err))
-                .finally(() => conn.close());
+                .catch(err => reject(err));
         });
     }
 
@@ -142,14 +155,12 @@ export default class MongoConnection {
                                 } else {
                                     resolve(result);
                                 }
-                                client.close();
                             });
                     } catch (error) {
                         reject(error);
                     }
                 })
-                .catch((err) => reject(err))
-                .finally(() => conn.close());
+                .catch((err) => reject(err));
         });
     }
 }
