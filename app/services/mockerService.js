@@ -55,14 +55,15 @@ export default class MockerService {
                                     .then(() => {
                                         console.log(`Values added`);
                                     })
-                                    .catch(err => console.log(err));
+                                    .catch(err => console.log(err))
+                                    .finally(() => this.mongo.close());
                                 }
                                 resolve(result);
                             }
                         })
                         .catch(err => { 
                             reject(err);
-                        });
+                        })
                     }
                 } else {
                     const result = { 
