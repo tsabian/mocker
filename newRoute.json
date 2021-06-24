@@ -1,0 +1,22 @@
+{
+    "name": "[name]",
+    "path": "[path]",
+    "context": ["redpay-oauth", "redpay-api", "hyaku-api", "cielopay-oauth"],
+    "method": "post",
+    "expectedStatus": 200,
+    "request": {
+        "headers": null,
+        "query": null,
+        "body": null,
+        "responses": [{
+            "status": 200,
+            "body": null,
+            "responseCollectionName": null,
+            "find": null,
+            "projection": {
+                "_id": 0
+            }
+        }],
+        "params": null
+    }
+}

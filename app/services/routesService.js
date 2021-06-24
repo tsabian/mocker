@@ -1,5 +1,6 @@
 import MongoConnection from '../../config/mongo';
 import Environment from '../../config/environment';
+import { ObjectId } from 'mongodb';
 
 /**
  * Methods Class
@@ -37,6 +38,25 @@ export default class RouteService {
     }
 
     /**
+     * Get all elements by routes
+     */
+    listRoutes() {
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName);
+    }
+
+    /**
+     * Get Routes by object ID
+     * @param {string} id Set id to filter routes
+     */
+    getBy(id) {
+        const find = {
+            '_id': new ObjectId(id)
+        };
+        console.log(find);
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find);
+    }
+
+    /**
      * Get all routes
      */
     getAllRoutes() {
@@ -46,7 +66,7 @@ export default class RouteService {
             'context': 1
         };
         const find = { }
-        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection);
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection).finally(() => this.mongo.close());
     }
 
     /**
@@ -64,7 +84,7 @@ export default class RouteService {
                 '$eq': `${withMethod}`
             }
         };
-        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection);
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection).finally(() => this.mongo.close());
     }
 
     /**
@@ -106,6 +126,9 @@ export default class RouteService {
                         const firstRoute = route[0];
                         result.statusCode = firstRoute.expectedStatus;
                         const expectedResponse = firstRoute.request.responses.find(expected => expected.status == result.statusCode);
+                        if (expectedResponse.timeoutMilleseconds) {
+                            result.timeoutMilleseconds = expectedResponse.timeoutMilleseconds;
+                        }
                         if (expectedResponse.responseCollectionName) {
                             const find = expectedResponse.find || filter;
                             this.getCollection(expectedResponse.responseCollectionName, find, expectedResponse.projection, expectedResponse.limit || 0)
@@ -126,10 +149,12 @@ export default class RouteService {
                                 result.statusCode = statusException;
                                 result.error = err;
                                 reject(result);
-                            });
+                            }).
+                            finally(() => this.mongo.close());
                         } else {
                             result.body = expectedResponse.body;
                             resolve(result);
+                            this.mongo.close();
                         }
                     } catch (error) {
                         console.log(error);
@@ -150,7 +175,7 @@ export default class RouteService {
      * @param {Number} limit Set the limit of collectin, default is 0
      */
     getCollection(collectionName, find, projection, limit = 0) {
-        return this.mongo.select(this.mongo.DataBaseName, collectionName, find, projection, limit);
+        return this.mongo.select(this.mongo.DataBaseName, collectionName, find, projection, limit).finally(() => this.mongo.close());
     }
 
     /**
@@ -163,7 +188,8 @@ export default class RouteService {
             '$set': { 'request.headers': keyValues }
         };
         this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+        .finally(() => this.mongo.close());
     }
 
     /**
@@ -176,7 +202,8 @@ export default class RouteService {
             '$set': { 'request.query': keyValues }
         };
         this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+        .finally(() => this.mongo.close());
     }
 
     /**
@@ -189,7 +216,8 @@ export default class RouteService {
             '$set': { 'request.body': object }
         };
         this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+        .finally(() => this.mongo.close());
     }
 
     /**
@@ -202,7 +230,8 @@ export default class RouteService {
             '$set': { 'request.params': object }
         };
         this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err))
+        .finally(() => this.mongo.close());
     }
 
 }
