@@ -10,7 +10,6 @@ export default class MongoConnection {
     constructor(environment) {
         this._dataBaseName = environment.Settings.mongo.DataBaseName;
         this.mongoUri = environment.Settings.mongo.connectionString;
-        this._sessionDataBase = this.getConnection();
     }
 
     /**
@@ -42,16 +41,7 @@ export default class MongoConnection {
      * prepare mongodb connection
      */
     prepare() {
-        this._sessionDataBase = this._sessionDataBase ?? this.getConnection();
-        if (!this._sessionDataBase.isConnected()) {
-            this._sessionDataBase = this.getConnection();
-        }
-        return this._sessionDataBase;
-    }
-
-    close() {
-        this._sessionDataBase.removeAllListeners();
-        this._sessionDataBase.close();
+        return this.getConnection();
     }
 
     /**
@@ -84,19 +74,20 @@ export default class MongoConnection {
         return new Promise((resolve, reject) => {
             const conn = this.prepare();
             conn.connect()
-                .then(async (client) => {
-                    try {
-                        const db = client.db(database);
-                        const result = await db.collection(collection)
-                            .find(find, { limit: limit })
-                            .project(projection)
-                            .toArray();
-                        resolve(result);
-                    } catch (err) {
-                        reject(err);
-                    }
-                })
-                .catch(err => reject(err));
+            .then(async (client) => {
+                try {
+                    const db = client.db(database);
+                    const result = await db.collection(collection)
+                                            .find(find, { limit: limit })
+                                            .project(projection)
+                                            .toArray();
+                    resolve(result);
+                } catch (err) {
+                    reject(err);
+                }
+            })
+            .catch(err => reject(err))
+            .finally(() => conn.close());
         });
     }
 
@@ -110,22 +101,17 @@ export default class MongoConnection {
         return new Promise((resolve, reject) => {
             const conn = this.prepare();
             conn.connect()
-                .then(async (client) => {
-                    try {
-                        const db = client.db(database);
-                        db.collection(collection)
-                            .insertMany(data, (err, result) => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    resolve(result.insertedIds);
-                                }
-                            });
-                    } catch (err) {
-                        reject(err);
-                    }
-                })
-                .catch(err => reject(err));
+            .then(async (client) => {
+                const db = client.db(database);
+                db.collection(collection)
+                .insertMany(data)
+                .then((result) => resolve(result.insertedIds))
+                .catch((err) => reject(err))
+                .finally(() => {
+                    conn.close();
+                });
+            })
+            .catch(err => reject(err));
         });
     }
 
@@ -142,25 +128,18 @@ export default class MongoConnection {
         return new Promise((resolve, reject) => {
             const conn = this.prepare();
             conn.connect()
-                .then(async (client) => {
-                    const query = {
-                        _id
-                    };
-                    try {
-                        const db = client.db(database);
-                        db.collection(collection)
-                            .updateOne(query, updateQuery, (err, result) => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    resolve(result);
-                                }
-                            });
-                    } catch (error) {
-                        reject(error);
-                    }
-                })
-                .catch((err) => reject(err));
+            .then((client) => {
+                const query = {
+                    _id
+                };
+                const db = client.db(database);
+                db.collection(collection)
+                .updateOne(query, updateQuery)
+                .then((result) => resolve(result.upsertedId))
+                .catch((err) => reject(err))
+                .finally(() => conn.close());
+            })
+            .catch((err) => reject(err));
         });
     }
 }
