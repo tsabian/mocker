@@ -37,6 +37,10 @@ export default class RouteService {
         this.mongo = mongo;
     }
 
+    get connection() {
+        return this.mongo;
+    }
+
     /**
      * Get all elements by routes
      */
@@ -66,7 +70,7 @@ export default class RouteService {
             'context': 1
         };
         const find = { }
-        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection).finally(() => this.mongo.close());
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection);
     }
 
     /**
@@ -84,16 +88,15 @@ export default class RouteService {
                 '$eq': `${withMethod}`
             }
         };
-        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection).finally(() => this.mongo.close());
+        return this.mongo.select(this.mongo.DataBaseName, this.mongo.RouteCollectionName, find, projection);
     }
 
     /**
      * Get Routes by route and method
      * @param {string} route 
      * @param {string} method
-     * @param {Object} filter
      */
-    getResponse(path, method, filter = {}) {
+    getResponse(path, method) {
         let result = {
             statusCode: 304
         };
@@ -126,36 +129,12 @@ export default class RouteService {
                         const firstRoute = route[0];
                         result.statusCode = firstRoute.expectedStatus;
                         const expectedResponse = firstRoute.request.responses.find(expected => expected.status == result.statusCode);
-                        if (expectedResponse.timeoutMilleseconds) {
-                            result.timeoutMilleseconds = expectedResponse.timeoutMilleseconds;
-                        }
-                        if (expectedResponse.responseCollectionName) {
-                            const find = expectedResponse.find || filter;
-                            this.getCollection(expectedResponse.responseCollectionName, find, expectedResponse.projection, expectedResponse.limit || 0)
-                            .then((collectionResult) => {
-                                if (collectionResult) {
-                                    if (expectedResponse.limit == 0 || expectedResponse.limit > 1) {
-                                        result.body = collectionResult;
-                                    } else {
-                                        result.body = collectionResult[0];
-                                    }
-                                } else {
-                                    result.body = expectedResponse.body;
-                                }
-                                resolve(result);
-                            })
-                            .catch((err) => { 
-                                console.log('Request fail');
-                                result.statusCode = statusException;
-                                result.error = err;
-                                reject(result);
-                            }).
-                            finally(() => this.mongo.close());
-                        } else {
-                            result.body = expectedResponse.body;
-                            resolve(result);
-                            this.mongo.close();
-                        }
+                        result.timeoutMilleseconds = expectedResponse.timeoutMilleseconds;
+                        result.responseCollectionName = expectedResponse.responseCollectionName;
+                        result.body = expectedResponse.body;
+                        result.projection = expectedResponse.projection;
+                        result.limit = expectedResponse.limit || 0;
+                        resolve(result);
                     } catch (error) {
                         console.log(error);
                         result.statusCode = statusException;
@@ -175,7 +154,44 @@ export default class RouteService {
      * @param {Number} limit Set the limit of collectin, default is 0
      */
     getCollection(collectionName, find, projection, limit = 0) {
-        return this.mongo.select(this.mongo.DataBaseName, collectionName, find, projection, limit).finally(() => this.mongo.close());
+        return this.mongo.select(this.mongo.DataBaseName, collectionName, find, projection, limit);
+    }
+
+    /**
+     * Get Response with collection
+     * @param {string} path 
+     * @param {string} method
+     * @param {Object} filter
+     */
+    getResponseWithCollection(path, method, filter = {}) {
+        let result = {
+            statusCode: 304
+        };
+        return new Promise((resolve, reject) => {
+            this.getResponse(path, method)
+            .then((response) => {
+                result.statusCode = response.statusCode;
+                result.timeoutMilleseconds = response.timeoutMilleseconds;
+                result.body = response.body;
+                const find = response.find || filter;
+                if (response.responseCollectionName) {
+                    this.getCollection(response.responseCollectionName, find, response.projection, response.limit)
+                    .then((collection) => {
+                        if (collection) {
+                            if (response.limit == 0 || response.limit > 1) {
+                                result.body = collection;
+                            } else {
+                                result.body = collection[0];
+                            }
+                        }
+                        resolve(result);
+                    });
+                } else {
+                    resolve(result);
+                }
+            })
+            .catch((err) => reject(err));
+        });
     }
 
     /**
@@ -187,9 +203,7 @@ export default class RouteService {
         const update = {
             '$set': { 'request.headers': keyValues }
         };
-        this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
-        .catch((err) => console.log(err))
-        .finally(() => this.mongo.close());
+        return this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update);
     }
 
     /**
@@ -201,9 +215,7 @@ export default class RouteService {
         const update = {
             '$set': { 'request.query': keyValues }
         };
-        this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
-        .catch((err) => console.log(err))
-        .finally(() => this.mongo.close());
+        return this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update);
     }
 
     /**
@@ -215,9 +227,7 @@ export default class RouteService {
         const update = {
             '$set': { 'request.body': object }
         };
-        this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
-        .catch((err) => console.log(err))
-        .finally(() => this.mongo.close());
+        return this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update);
     }
 
     /**
@@ -229,9 +239,7 @@ export default class RouteService {
         const update = {
             '$set': { 'request.params': object }
         };
-        this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update)
-        .catch((err) => console.log(err))
-        .finally(() => this.mongo.close());
+        return this.mongo.update(this.mongo.DataBaseName, this.mongo.RouteCollectionName, id, update);
     }
 
 }
