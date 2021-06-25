@@ -1,8 +1,7 @@
 import RouteService from '../services/routesService';
 import url from 'url';
 import Environment from '../../config/environment';
-import { response } from 'express';
-import { time } from 'console';
+import { Console } from 'console';
 
 /**
  * App Route export
@@ -93,12 +92,12 @@ function prepareRequest(route, service, req, res) {
     }
     const id = route._id;
 
-    service.setHeader(id, req.headers);
-    service.setQuery(id, findQuery);
-    service.setBody(id, req.body);
-    service.setParams(id, req.params);
-
-    service.getResponse(currentPath, method, filter)
+    service.setHeader(id, req.headers).then().catch((err) => console.log(`header error: ${err}`));
+    service.setQuery(id, findQuery).then().catch((err) => console.log(`query error: ${err}`));
+    service.setBody(id, req.body).then().catch((err) => console.log(`body error: ${err}`));
+    service.setParams(id, req.params).then().catch((err) => console.log(`params error: ${err}`));
+    
+    service.getResponseWithCollection(currentPath, method, filter)
         .then((result) => {
             return prepareResponse(res, result.statusCode, result.body, result.timeoutMilleseconds);
         })
@@ -122,7 +121,7 @@ function prepareResponse(res, status, body = null, timeoutMilleseconds = 0) {
     if (timeoutMilleseconds && timeoutMilleseconds > 0) {
         sleep(timeoutMilleseconds, body).then((body) => {
             prepareResult(res, status, body);
-        })
+        });
     } else {
         prepareResult(res, status, body);
     }
