@@ -1,7 +1,6 @@
 import RouteService from '../services/routesService';
 import url from 'url';
 import Environment from '../../config/environment';
-import { Console } from 'console';
 
 /**
  * App Route export
