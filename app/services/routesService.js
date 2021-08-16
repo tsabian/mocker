@@ -134,6 +134,7 @@ export default class RouteService {
                         result.body = expectedResponse.body;
                         result.projection = expectedResponse.projection;
                         result.limit = expectedResponse.limit || 0;
+                        result.headers = expectedResponse.headers;
                         resolve(result);
                     } catch (error) {
                         console.log(error);
