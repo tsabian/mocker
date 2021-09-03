@@ -1,7 +1,7 @@
 import RouteService from '../services/routesService';
 import url from 'url';
 import Environment from '../../config/environment';
-import { Console } from 'console';
+import { header } from 'express-validator';
 
 /**
  * App Route export
@@ -99,7 +99,7 @@ function prepareRequest(route, service, req, res) {
     
     service.getResponseWithCollection(currentPath, method, filter)
         .then((result) => {
-            return prepareResponse(res, result.statusCode, result.body, result.timeoutMilleseconds);
+            return prepareResponse(res, result.statusCode, result.body, result.timeoutMilleseconds, result.headers);
         })
         .catch(err => {
             return prepareResponse(res, statusException, err);
@@ -115,15 +115,16 @@ function prepareRequest(route, service, req, res) {
  * @param {Number}      status                  Set http status code
  * @param {Object}      body                    Set body result
  * @param {Number}      timeoutMilleseconds     Set timeou in milleseconds
+ * @param {Object}      headers                 Set headers
  * @returns return the Promise<any>
  */
-function prepareResponse(res, status, body = null, timeoutMilleseconds = 0) {
+function prepareResponse(res, status, body = null, timeoutMilleseconds = 0, headers = null) {
     if (timeoutMilleseconds && timeoutMilleseconds > 0) {
         sleep(timeoutMilleseconds, body).then((body) => {
-            prepareResult(res, status, body);
+            prepareResult(res, status, body, headers);
         });
     } else {
-        prepareResult(res, status, body);
+        prepareResult(res, status, body, headers);
     }
 }
 
@@ -146,9 +147,21 @@ function sleep(milleseconds, body) {
  * @param {Response}    res     Set response object
  * @param {Number}      status  Set response object
  * @param {Object}      body    Set body result
+ * @param {Object}      headers Set headers response
  * @returns Json result
  */
-function prepareResult(res, status, body) {
+function prepareResult(res, status, body, headers) {
+    if (headers) {
+
+        const convertedHeaders = Object.keys(headers).map(key => ({
+            name: key, 
+            value: headers[key]
+        }));
+
+        convertedHeaders.forEach(header => {
+            res.setHeader(header.name, header.value);
+        })
+    }
     if (!body) {
         return res.status(status).json();
     }
