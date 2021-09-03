@@ -134,6 +134,7 @@ export default class RouteService {
                         result.body = expectedResponse.body;
                         result.projection = expectedResponse.projection;
                         result.limit = expectedResponse.limit || 0;
+                        result.headers = expectedResponse.headers;
                         resolve(result);
                     } catch (error) {
                         console.log(error);
@@ -173,6 +174,7 @@ export default class RouteService {
                 result.statusCode = response.statusCode;
                 result.timeoutMilleseconds = response.timeoutMilleseconds;
                 result.body = response.body;
+                result.headers = response.headers;
                 const find = response.find || filter;
                 if (response.responseCollectionName) {
                     this.getCollection(response.responseCollectionName, find, response.projection, response.limit)
