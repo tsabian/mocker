@@ -14,6 +14,8 @@ NodeJS server Mock com mongoDB para simular backend para desenvolvimento de fron
 
 https://hub.docker.com/repository/docker/tsabian/mocker/general
 
+Para rodar local
+
 ```shell
 git clone https://github.com/tsabian/mocker.git
 docker compose -f docker-compose.yml up
