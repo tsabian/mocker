@@ -1,6 +1,6 @@
 {
   "name": "mocker",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Servidor de mock com NodeJS e MongoDB",
   "main": "start.js",
   "scripts": {
@@ -9,11 +9,12 @@
     "local": "nodemon --exec babel-node start.js -- --configuration=dev",
     "docker-start": "nodemon --exec babel-node start.js --host 0.0.0.0",
     "docker-mongo-pull": "docker pull mongo",
-    "docker-mongo-run": "docker run --name mongo -p 27017:27017 -e 'MONGO_INITDB_ROOT_USERNAME=root' -e 'MONGO_INITDB_ROOT_PASSWORD=pass_123' -d mongo ",
+    "docker-mongo-run": "docker run --name mongo -p 27017:27017 -e 'MONGO_INITDB_ROOT_USERNAME=root' -e 'MONGO_INITDB_ROOT_PASSWORD=P_ss!98578' -d mongo ",
     "docker-build": "docker build -t tsabian/mocker .",
-    "docker-run": "docker run --name mocker -p 3000:3000 -d tsabian/mocker",
+    "docker-run": "docker run --name, mocker -p 3000:3000 -d tsabian/mocker",
     "docker-publish": "docker push tsabian/mocker",
-    "docker-init": "npm run docker-mongo-pull && npm run docker-mongo-run && npm run docker-run"
+    "docker-init": "npm run docker-mongo-pull && npm run docker-mongo-run && npm run docker-run",
+    "docker-compose": "docker compose -f docker-compose.yml up"
   },
   "repository": {
     "type": "git",
@@ -54,7 +55,7 @@
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
     "helmet": "^4.1.0",
-    "mongodb": "^3.6.0",
+    "mongodb": "^4.1.1",
     "uuid": "^8.3.0"
   }
 }

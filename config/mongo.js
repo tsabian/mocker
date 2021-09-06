@@ -1,4 +1,4 @@
-import { MongoClient, ObjectID } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import Environment from './environment';
 
 export default class MongoConnection {
@@ -124,7 +124,7 @@ export default class MongoConnection {
      * @returns Promise
      */
     update(database, collection, id, updateQuery) {
-        let _id = ObjectID(id);
+        let _id = ObjectId(id);
         return new Promise((resolve, reject) => {
             const conn = this.prepare();
             conn.connect()
