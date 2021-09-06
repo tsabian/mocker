@@ -56,7 +56,6 @@ export default class MockerService {
                                         console.log(`Values added`);
                                     })
                                     .catch(err => console.log(err))
-                                    .finally(() => this.mongo.close());
                                 }
                                 resolve(result);
                             }
