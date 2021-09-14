@@ -11,7 +11,7 @@
     "docker-mongo-pull": "docker pull mongo",
     "docker-mongo-run": "docker run --name mongo -p 27017:27017 -e 'MONGO_INITDB_ROOT_USERNAME=root' -e 'MONGO_INITDB_ROOT_PASSWORD=P_ss!98578' -d mongo ",
     "docker-build": "docker build -t tsabian/mocker .",
-    "docker-run": "docker run --name, mocker -p 3000:3000 -d tsabian/mocker",
+    "docker-run": "docker run --name, mocker -p 5000:5000 -d tsabian/mocker",
     "docker-publish": "docker push tsabian/mocker",
     "docker-init": "npm run docker-mongo-pull && npm run docker-mongo-run && npm run docker-run",
     "docker-compose": "docker compose -f docker-compose.yml up"
