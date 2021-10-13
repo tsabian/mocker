@@ -15,7 +15,8 @@
             "find": null,
             "projection": {
                 "_id": 0
-            }
+            },
+            "timeoutMilleseconds": null
         }],
         "params": null
     }
