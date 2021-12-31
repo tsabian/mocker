@@ -9,7 +9,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=P_ss!98578
     image: mongo:latest
     volumes:
-      - ./data:/data/db
+      - $PWD/data:/data/db
     ports:
       - "27017:27017"
 
