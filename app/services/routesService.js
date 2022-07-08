@@ -129,13 +129,21 @@ export default class RouteService {
                         const firstRoute = route[0];
                         result.statusCode = firstRoute.expectedStatus;
                         const expectedResponse = firstRoute.request.responses.find(expected => expected.status == result.statusCode);
-                        result.timeoutMilleseconds = expectedResponse.timeoutMilleseconds;
-                        result.responseCollectionName = expectedResponse.responseCollectionName;
-                        result.body = expectedResponse.body;
-                        result.projection = expectedResponse.projection;
-                        result.limit = expectedResponse.limit || 0;
-                        result.headers = expectedResponse.headers;
-                        resolve(result);
+                        if (!expectedResponse) {
+                            resolve(result);
+                        } else {
+                            if (expectedResponse.timeoutMilleseconds !== undefined) {
+                                result.timeoutMilleseconds = expectedResponse.timeoutMilleseconds;
+                            }
+                            if (expectedResponse.responseCollectionName !== undefined) {
+                                result.responseCollectionName = expectedResponse.responseCollectionName;
+                            }
+                            result.body = expectedResponse.body;
+                            result.projection = expectedResponse.projection;
+                            result.limit = expectedResponse.limit || 0;
+                            result.headers = expectedResponse.headers;
+                            resolve(result);
+                        }
                     } catch (error) {
                         console.log(error);
                         result.statusCode = statusException;
