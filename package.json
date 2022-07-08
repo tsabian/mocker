@@ -1,6 +1,6 @@
 {
   "name": "mocker",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Servidor de mock com NodeJS e MongoDB",
   "main": "start.js",
   "scripts": {
@@ -10,6 +10,7 @@
     "docker-start": "nodemon --exec babel-node start.js --host 0.0.0.0",
     "docker-mongo-pull": "docker pull mongo:latest",
     "docker-mongo-run": "docker run --name mongo -p 27017:27017 -e 'MONGO_INITDB_ROOT_USERNAME=root' -e 'MONGO_INITDB_ROOT_PASSWORD=P_ss!98578' -v /data -d mongo",
+    "docker-mongo-express-run": "docker run --name mongo-express --link mongo:mongo -p 8081:8081 -e 'ME_CONFIG_MONGODB_URL=mongodb://root:P_ss!98578@mongo:27017' -e 'ME_CONFIG_OPTIONS_EDITORTHEME=ambiance' -e 'ME_CONFIG_MONGODB_ADMINUSERNAME=root' -e 'ME_CONFIG_MONGODB_ADMINPASSWORD=P_ss!98578' -d mongo-express",
     "docker-build": "docker build -t tsabian/mocker .",
     "docker-run": "docker run --name, mocker -p 5000:5000 -d tsabian/mocker",
     "docker-publish": "docker push tsabian/mocker",
@@ -35,11 +36,11 @@
   },
   "homepage": "https://github.com/bitxlabs/mocker#readme",
   "devDependencies": {
-    "eslint": "^7.10.0",
-    "eslint-config-standard": "^16.0.3",
+    "eslint": "^8.19.0",
+    "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-promise": "^6.0.0",
     "eslint-plugin-standard": "^5.0.0",
     "nodemon": "^2.0.4"
   },
@@ -54,7 +55,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-validator": "^6.6.1",
-    "helmet": "^4.1.0",
+    "helmet": "^5.1.0",
     "mongodb": "^4.1.1",
     "uuid": "^8.3.0"
   }
